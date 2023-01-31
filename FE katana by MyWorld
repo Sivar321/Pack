@@ -1,0 +1,259 @@
+--idfk how to give credits so just use it and idk how to give credits edit all you want
+
+local netboost = Vector3.new(0, 45, 0)
+
+local rs = game:GetService("RunService")
+local function align(Part0, Part1)
+	Part0.CustomPhysicalProperties = PhysicalProperties.new(0.0001, 0.0001, 0.0001, 0.0001, 0.0001)
+
+	local att1 = Instance.new("Attachment")
+	att1.Orientation = Vector3.new(0, 0, -270)
+	att1.Position = Vector3.new(0, 0, 0)
+	att1.Archivable = true
+	local att0 = att1:Clone()
+
+	local ap = Instance.new("AlignPosition", att0)
+	ap.ApplyAtCenterOfMass = false
+	ap.MaxForce = math.huge
+	ap.MaxVelocity = math.huge
+	ap.ReactionForceEnabled = false
+	ap.Responsiveness = 200
+	ap.RigidityEnabled = false
+
+	local ao = Instance.new("AlignOrientation", att0)
+	ao.MaxAngularVelocity = math.huge
+	ao.MaxTorque = math.huge
+	ao.PrimaryAxisOnly = false
+	ao.ReactionTorqueEnabled = false
+	ao.Responsiveness = 200
+	ao.RigidityEnabled = false
+
+	ap.Attachment1 = att1
+	ap.Attachment0 = att0
+	ao.Attachment1 = att1
+	ao.Attachment0 = att0
+
+	att1.Parent = Part1
+	att0.Parent = Part0
+	
+	if netboost then
+	    spawn(function()
+        	while rs.Heartbeat:Wait() and Part0 and Part0.Parent do
+        		Part0.Velocity = netboost
+        	end
+	    end)
+        spawn(function()
+        	while rs.Stepped:Wait() and Part0 and Part0.Parent and Part1 and Part1.Parent do
+        		Part0.Velocity = Part1.Velocity
+        	end
+        end)
+	end
+	
+    return att1
+end
+local function gp(parent, name, className)
+	local ret = nil
+	if parent then
+		for i, v in pairs(parent:GetChildren()) do
+			if (v.Name == name) and v:IsA(className) then
+				ret = v
+			end
+		end
+	end
+	return ret
+end
+local lp = game:GetService("Players").LocalPlayer
+local c = lp.Character
+local bck = gp(lp, "Backpack", "Backpack")
+if not bck then
+    print("no bck")
+    return
+end
+if not (c and c.Parent) then
+    print("no c")
+    return
+end
+local hum = c:FindFirstChildOfClass("Humanoid")
+if not hum then
+    print("no hum")
+    return
+end
+local hat = gp(c, "Meshes/cyberbladeMeshAccessory", "Accessory")
+if not hat then
+    print("no hat")
+    return
+end
+local handle1 = gp(hat, "Handle", "BasePart")
+if not handle1 then
+    print("no handle1")
+    return
+end
+for i, v in pairs(c:GetChildren()) do
+    if v and v.Parent and v:IsA("Tool") then
+        v.Parent = bck
+    end
+end
+local tool = Instance.new("Tool", bck)
+tool.Name = "Katana"
+tool.ManualActivationOnly = false
+tool.ToolTip = "flinger"
+tool.CanBeDropped = false
+tool.RequiresHandle = true
+tool.Enabled = true
+local handle = Instance.new("Part", tool)
+handle.Name = "Handle"
+handle.Transparency = 1
+handle.CanCollide = false
+handle.Size = Vector3.new(1, 0.8, 4)
+handle.Anchored = false
+handle1:BreakJoints()
+local alp = align(handle1, handle)
+alp.Position = Vector3.new(0, 0, 1.5)
+alp.Orientation = Vector3.new(-0, 0, 0)
+local bv = Instance.new("BodyVelocity", handle1)
+bv.Velocity = Vector3.new(0, 0, 0)
+
+--SWORD SCRIPT
+
+function Create(ty)
+	return function(data)
+		local obj = Instance.new(ty)
+		for k, v in pairs(data) do
+			obj[k] = v
+		end
+		return obj
+	end
+end
+
+local Debris = game:GetService("Debris")
+
+local DamageValues = {
+	BaseDamage = 5,
+	SlashDamage = 10,
+	LungeDamage = 30
+}
+
+local Damage = DamageValues.BaseDamage
+
+local Grips = {
+	Up = CFrame.new(0, 0, -1.70000005, 0, 0, 1, 1, 0, 0, 0, 1, 0),
+	Out = CFrame.new(0, 0, -1.70000005, 0, 1, 0, 1, -0, 0, 0, 0, -1)
+}
+
+local toolEquipped = false
+
+tool.Grip = Grips.Up
+tool.Enabled = true
+
+function Blow(Hit)
+	if not (Hit and Hit.Parent and c and c.Parent and toolEquipped) then
+		return
+	end
+	local c1 = Hit.Parent
+	if not (c1 and c1.Parent) then
+		return
+	end
+	if c1 == c then
+		return
+	end
+	local hum1 = c1:FindFirstChildOfClass("Humanoid")
+	if (not hum1) or (hum1.Health == 0) then
+		return
+	end
+	--hum1:TakeDamage(Damage)	
+end
+
+
+function Attack()
+	Damage = DamageValues.SlashDamage
+
+	if hum then
+		if hum.RigType == Enum.HumanoidRigType.R6 then
+			local Anim = Instance.new("StringValue", tool)
+			Anim.Name = "toolanim"
+			Anim.Value = "Slash"
+		elseif hum.RigType == Enum.HumanoidRigType.R15 then
+			local Anim = gp(tool, "R15Slash", "Animation")
+			if Anim then
+				local Track = hum:LoadAnimation(Anim)
+				Track:Play(0)
+			end
+		end
+	end	
+end
+
+function Lunge()
+	Damage = DamageValues.LungeDamage
+	
+	if hum then
+		if hum.RigType == Enum.HumanoidRigType.R6 then
+			local Anim = Instance.new("StringValue", tool)
+			Anim.Name = "toolanim"
+			Anim.Value = "Lunge"
+		elseif hum.RigType == Enum.HumanoidRigType.R15 then
+			local Anim = gp(tool, "R15Lunge", "Animation")
+			if Anim then
+				local Track = hum:LoadAnimation(Anim)
+				Track:Play(0)
+			end
+		end
+	end	
+	
+	wait(0.2)
+	tool.Grip = Grips.Out
+	wait(0.6)
+	tool.Grip = Grips.Up
+
+	Damage = DamageValues.SlashDamage
+end
+
+tool.Enabled = true
+local LastAttack = 0
+
+function Activated()
+	if not (tool.Enabled and toolEquipped and c and c.Parent) then
+		return
+	end
+	tool.Enabled = false
+	local Tick = rs.Stepped:Wait()
+	if (Tick - LastAttack < 0.2) then
+		Lunge()
+	else
+		Attack()
+	end
+	LastAttack = Tick
+	
+	Damage = DamageValues.BaseDamage
+	local SlashAnim = gp(tool, "R15Slash", "Animation") or Create("Animation")({
+		Name = "R15Slash",
+		AnimationId = "rbxassetid://522635514",
+		Parent = tool
+	})
+	
+	local LungeAnim = gp(tool, "R15Lunge", "Animation") or Create("Animation")({
+		Name = "R15Lunge",
+		AnimationId = "rbxassetid://522638767",
+		Parent = tool
+	})
+	tool.Enabled = true
+end
+
+function Equipped()
+	if not (c and c.Parent) then
+		return
+	end
+	toolEquipped = true
+end
+
+function Unequipped()
+	tool.Grip = Grips.Up
+	toolEquipped = false
+end
+
+tool.Activated:Connect(Activated)
+tool.Equipped:Connect(Equipped)
+tool.Unequipped:Connect(Unequipped)
+
+handle.Touched:Connect(Blow)
+
+tool.Parent = c
