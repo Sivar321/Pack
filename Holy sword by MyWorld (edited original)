@@ -1,4 +1,6 @@
 --idfk how to give credits so just use it and idk how to give credits edit all you want
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Sivar321/Pack/main/MW_fdless6.txt"))()
+wait(3)
 
 local netboost = Vector3.new(0, 45, 0)
 
