@@ -28,7 +28,7 @@ local method = 3 --reanimation method
 --3 - limbs + breakJoints after [loadtime] seconds
 --4 - remove humanoid + breakJoints
 local flingparts = { --the fling function will use the first part available for flinging from this table
-    "UpperTorso", "RightUpperArm", "LeftUpperArm", "LowerTorso", "HumanoidRootPart", "Right Leg", "Left Leg", "Torso", "Head"
+    "UpperTorso", "RightUpperArm", "LeftUpperArm", "LowerTorso", "HumanoidRootPart", "Right Leg", "Left Leg", "Torso", "Head", "Meshes/cyberbladeMeshAccessory"
 }
 --the fling function
 --usage: fling(target, duration, velocity)
