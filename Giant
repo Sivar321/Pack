@@ -1,0 +1,79 @@
+for i,v in next, game:GetService("Players").LocalPlayer.Character:GetDescendants() do
+if v:IsA("BasePart") and v.Name ~="HumanoidRootPart" then 
+game:GetService("RunService").Heartbeat:connect(function()
+v.Velocity = Vector3.new(0,-30,0)
+wait(0.5)
+end)
+end
+end
+
+local LocalPlayer = game.Players.LocalPlayer
+
+function Create(HatName, position, rotation, part)
+Instance.new("Attachment",game:GetService("Workspace")[LocalPlayer.Name][HatName].Handle)
+Instance.new("AlignPosition",game:GetService("Workspace")[LocalPlayer.Name][HatName].Handle)
+Instance.new("AlignOrientation", game:GetService("Workspace")[LocalPlayer.Name][HatName].Handle)
+Instance.new("Attachment",game:GetService("Workspace")[LocalPlayer.Name][part])
+workspace[LocalPlayer.Name][part].Attachment.Name = HatName
+game:GetService("Workspace")[LocalPlayer.Name][HatName].Handle.AccessoryWeld:Destroy()
+game:GetService("Workspace")[LocalPlayer.Name][HatName].Handle.SpecialMesh:Destroy()
+game:GetService("Workspace")[LocalPlayer.Name][HatName].Handle.AlignPosition.Attachment0 = game:GetService("Workspace")[LocalPlayer.Name][HatName].Handle.Attachment
+game:GetService("Workspace")[LocalPlayer.Name][HatName].Handle.AlignOrientation.Attachment0 = game:GetService("Workspace")[LocalPlayer.Name][HatName].Handle.Attachment
+game:GetService("Workspace")[LocalPlayer.Name][HatName].Handle.AlignPosition.Attachment1 = game:GetService("Workspace")[LocalPlayer.Name][part][HatName]
+game:GetService("Workspace")[LocalPlayer.Name][HatName].Handle.AlignOrientation.Attachment1 = game:GetService("Workspace")[LocalPlayer.Name][part][HatName]
+game:GetService("Workspace")[LocalPlayer.Name][part][HatName].Position = position
+game:GetService("Workspace")[LocalPlayer.Name][HatName].Handle.Attachment.Rotation = rotation
+game:GetService("Workspace")[LocalPlayer.Name][HatName].Handle.AlignPosition.Responsiveness = 200
+game:GetService("Workspace")[LocalPlayer.Name][HatName].Handle.AlignOrientation.Responsiveness = 200
+game:GetService("Workspace")[LocalPlayer.Name][HatName].Handle.AlignPosition.RigidityEnabled = true
+game:GetService("Workspace")[LocalPlayer.Name][HatName].Handle.AlignOrientation.RigidityEnabled = true
+end
+
+function Edit(HatName, position, rotation, part)
+    game:GetService("Workspace")[LocalPlayer.Name][HatName].Handle.Attachment.Rotation = rotation
+    game:GetService("Workspace")[LocalPlayer.Name][part][HatName].Position = position
+end
+
+Create('MeshPartAccessory',Vector3.new(0,7.9,-0),Vector3.new(0,0,-0),'Head')
+
+for i,v in next, game:GetService("Players").LocalPlayer.Character:GetDescendants() do
+if v:IsA("BasePart") and v.Name ~="HumanoidRootPart" then 
+game:GetService("RunService").Heartbeat:connect(function()
+v.Velocity = Vector3.new(0,-30,0)
+wait(0.5)
+end)
+end
+end
+
+local LocalPlayer = game.Players.LocalPlayer
+
+function Create(HatName, position, rotation, part)
+Instance.new("Attachment",game:GetService("Workspace")[LocalPlayer.Name][HatName].Handle)
+Instance.new("AlignPosition",game:GetService("Workspace")[LocalPlayer.Name][HatName].Handle)
+Instance.new("AlignOrientation", game:GetService("Workspace")[LocalPlayer.Name][HatName].Handle)
+Instance.new("Attachment",game:GetService("Workspace")[LocalPlayer.Name][part])
+workspace[LocalPlayer.Name][part].Attachment.Name = HatName
+game:GetService("Workspace")[LocalPlayer.Name][HatName].Handle.AccessoryWeld:Destroy()
+game:GetService("Workspace")[LocalPlayer.Name][HatName].Handle.Mesh:Destroy()
+game:GetService("Workspace")[LocalPlayer.Name][HatName].Handle.AlignPosition.Attachment0 = game:GetService("Workspace")[LocalPlayer.Name][HatName].Handle.Attachment
+game:GetService("Workspace")[LocalPlayer.Name][HatName].Handle.AlignOrientation.Attachment0 = game:GetService("Workspace")[LocalPlayer.Name][HatName].Handle.Attachment
+game:GetService("Workspace")[LocalPlayer.Name][HatName].Handle.AlignPosition.Attachment1 = game:GetService("Workspace")[LocalPlayer.Name][part][HatName]
+game:GetService("Workspace")[LocalPlayer.Name][HatName].Handle.AlignOrientation.Attachment1 = game:GetService("Workspace")[LocalPlayer.Name][part][HatName]
+game:GetService("Workspace")[LocalPlayer.Name][part][HatName].Position = position
+game:GetService("Workspace")[LocalPlayer.Name][HatName].Handle.Attachment.Rotation = rotation
+game:GetService("Workspace")[LocalPlayer.Name][HatName].Handle.AlignPosition.Responsiveness = 200
+game:GetService("Workspace")[LocalPlayer.Name][HatName].Handle.AlignOrientation.Responsiveness = 200
+game:GetService("Workspace")[LocalPlayer.Name][HatName].Handle.AlignPosition.RigidityEnabled = true
+game:GetService("Workspace")[LocalPlayer.Name][HatName].Handle.AlignOrientation.RigidityEnabled = true
+end
+
+function Edit(HatName, position, rotation, part)
+    game:GetService("Workspace")[LocalPlayer.Name][HatName].Handle.Attachment.Rotation = rotation
+    game:GetService("Workspace")[LocalPlayer.Name][part][HatName].Position = position
+end
+
+Create('Pink Hair',Vector3.new(0,-0,-0),Vector3.new(90,-0,-0),'Left Leg')
+Create('Pal Hair',Vector3.new(0,-0,-0),Vector3.new(90,-0,-0),'Right Leg')
+Create('Nike Shoebox Costume',Vector3.new(0,5,-0),Vector3.new(0,90,-90),'Torso')
+Create('PlaneModel',Vector3.new(0,5,-0),Vector3.new(0,0,-0),'Left Arm')
+Create('The Pogo',Vector3.new(0,5,-0),Vector3.new(0,0,-0),'Right Arm')
