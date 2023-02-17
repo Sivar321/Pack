@@ -311,7 +311,6 @@ table.insert(cors,sandbox(LocalScript3,function()
 		human = char.Humanoid
 		human.Changed:connect(function() if (human.Health==0) then mousedown = false BP:remove() point:remove() tool:remove() end end)
 		mouse.Button1Down:connect(function() onButton1Down(mouse) end)
-		mouse.KeyDown:connect(function(key) onKeyDown(key,mouse) end)
 	end
 
 	tool.Equipped:connect(onEquipped)
