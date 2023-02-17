@@ -267,8 +267,8 @@ table.insert(
                     end
                 end
 		if (key=="j") then 
-			if (dist~=5000) then 
-				dist = 5000 
+			if (power~=5000) then 
+				power = 5000 
 			end 
 		end
                 if E == "=" then
