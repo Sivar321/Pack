@@ -10,24 +10,21 @@ local novoid = true --prevents parts from going under workspace.FallenPartsDestr
 local antiragdoll = true --removes instances that are usually used for ragdolling form your character
 local addPartsOnRun = false --allows u to add more parts and joints to the simulation after it started
 local discharscripts = true --disables all localScripts parented to your character before reanimation
-local R15toR6 = true --adds fake r6 parts and joints for animations if your character is r15
-local hatcollide = true --makes hats cancollide (credit to ShownApe) (use method 0)
+local R15toR6 = false --adds fake r6 parts and joints for animations if your character is r15
 local humState16 = true --enables collisions for limbs before the humanoid dies (using hum:ChangeState)
-local walkSpeed = 16 --your walkspeed (can be changed at runtime)
+local walkSpeed = 50 --your walkspeed (can be changed at runtime)
 local jumpPower = 50 --your jump power (can be changed at runtime)
 local allowshiftlock = true --allows the user to use shiftlock (can be changed at runtime)
 local gravity = 196.2 --how fast the characters velocity increases while falling (can be changed at runtime)
 local simrad = 1000 --sets simulation radius to this with sethiddenproperty (nil to disable)
-local loadtime = game:GetService("Players").RespawnTime + 0.5 --anti respawn delay
-local method = 0 --reanimation method
+local loadtime = game:GetService("Players").RespawnTime + 0.5 --anti respawn delay for method 1
+local method = 1 --reanimation method
 --methods:
---0 - breakJoints (takes [loadtime] seconds to load)
---1 - limbs
---2 - limbs + anti respawn
---3 - limbs + breakJoints after [loadtime] seconds
---4 - remove humanoid + breakJoints
+--0 - limbs
+--1 - hat collisions (credit to ShownApe) + remove body parts
+--2 - remove humanoid + breakJoints
 local flingparts = { --the fling function will use the first part available for flinging from this table
-    "UpperTorso", "RightUpperArm", "LeftUpperArm", "LowerTorso", "HumanoidRootPart", "Right Leg", "Left Leg", "Torso", "Head"
+    "UpperTorso", "RightUpperArm", "LeftUpperArm", "LowerTorso", "Right Leg", "Left Leg", "Torso", "Head"
 }
 --the fling function
 --usage: fling(target, duration, velocity)
@@ -82,7 +79,7 @@ local head, torso = gp(c, "Head", "BasePart"), gp(c, "Torso", "BasePart") or gp(
 reclaim = reclaim and (c.PrimaryPart or rootpart)
 novoid = novoid and (ws.FallenPartsDestroyHeight + 1)
 flingparts = ((type(flingparts) == "table") and flingparts) or ((type(flingparts) == "string") and {flingparts}) or {}
-hatcollide = hatcollide and (method == 0)
+local hatcollide = (method == 1)
 R15toR6 = R15toR6 and hum and (hum.RigType == Enum.HumanoidRigType.R15)
 local shp = getfenv().sethiddenproperty
 simrad = shp and tonumber(simrad)
@@ -91,29 +88,21 @@ if hatcollide then
     for i, v in pairs(flingparts) do
         flingparts[i] = gp(c, v, "BasePart") or gp(gp(c, v, "Accessory"), "Handle", "BasePart") or {Anchored = true}
     end
+    lp.Character = nil
+    lp.Character = c
+    twait(loadtime)
 else
     for i, v in pairs(flingparts) do
         flingparts[i] = gp(c, v, "BasePart") or {Anchored = true}
     end
-end
-
-if method == 0 then
-    lp.Character = nil
-    lp.Character = c
-    twait(loadtime)
-elseif method == 2 then
-    lp.Character = nil
-    lp.Character = c
-elseif method == 3 then
-    lp.Character = nil
-    lp.Character = c
-    tdelay(loadtime, pcall, c.BreakJoints, c)
-elseif method == 4 then
-    if hum then
-        hum:Destroy()
-        hum = nil
+    if method == 2 then
+        if hum then
+            hum:Destroy()
+            hum = nil
+        end
     end
 end
+
 if not c then return end
 
 local cam = ws.CurrentCamera
@@ -164,7 +153,7 @@ end
 if humState16 and hum and (hum.Health > 0) then
     hum:ChangeState(16)
 end
-local keepneck = head and torso and ((method == 1) or (method == 2) or (method == 3))
+local keepneck = head and torso and (method == 0)
 local joints, cframes, lastpositions = {}, {}, {}
 local function ondes(v)
     if antiragdoll and v:IsA("HingeConstraint") or v:IsA("BallSocketConstraint") then
@@ -213,13 +202,20 @@ local camoff = cf(v3_0, camcf.LookVector)
 camoff = camoff - v3_001 * (camcf.Position - (cfr.Position + v3_0150)).Magnitude
 
 if hatcollide then
-    hatcollide = c:FindFirstChildOfClass("BodyColors") or gp(c, "Health", "Script") or gp(c, "Animate", "LocalScript")
-    if torso and rootpart and hatcollide then
+    if torso and rootpart then
         torso:Destroy()
         rootpart:Destroy()
+    end
+    for i, v in pairs(c:GetChildren()) do
+        if v:IsA("BasePart") then
+            v:Destroy()
+            hatcollide = false
+        end
+    end
+    hatcollide = hatcollide and (c:FindFirstChildOfClass("BodyColors") or gp(c, "Health", "Script") or gp(c, "Animate", "LocalScript"))
+    if hatcollide then
         hatcollide:Destroy()
     end
-    c:BreakJoints()
 end
 local refreshjoints = nil
 refreshjoints = function(part, refreshed)
@@ -380,6 +376,9 @@ local function addmode(key, mode)
     end
     if key == "default" then
         modes.default = mode
+        if mode.modeEntered then
+            mode.modeEntered()
+        end
     elseif #key == 1 then
         key = Enum.KeyCode[key:sub(1, 1):upper()]
         modes[key] = mode
@@ -404,10 +403,16 @@ uis.InputBegan:Connect(function(a)
     elseif a == keyShift then
         shiftlock = allowshiftlock and not shiftlock
     elseif modes[a] then
+        if modes[mode].modeLeft then
+            modes[mode].modeLeft()
+        end
         if mode == a then
             mode = "default"
         else
             mode = a
+        end
+        if modes[mode].modeEntered then
+            modes[mode].modeEntered()
         end
     end
 end)
@@ -432,16 +437,29 @@ local v3_xz, v3_net = v3_101 * 10, v3_010 * 25.01
 local function getNetlessVelocity(realPartVelocity)
     --if true then return v3_0 end
     --if true then return realPartVelocity end
+    --if true then return v3_net end
     if realPartVelocity.Magnitude > 25.01 then
         realPartVelocity = realPartVelocity.Unit * 25.01
     end
     return realPartVelocity * v3_xz + v3_net
 end
 
-local function getjoint(name)
+local function getJoint(name)
     for i, v in pairs(joints) do
         if v.Name == name then
             return v
+        end
+    end
+    return {C0 = cf_0, C1 = cf_0}
+end
+
+local function getAccessoryWeld(hatname)
+    local handle = gp(gp(c, hatname, "Accessory"), "Handle", "BasePart")
+    if handle then
+        for i, v in pairs(joints) do 
+            if v.Part0 == handle then
+                return v
+            end
         end
     end
     return {C0 = cf_0, C1 = cf_0}
@@ -569,6 +587,8 @@ if ctrlclicktp then
                 if mouse.Target then
                     local pos = mouse.Hit.Position + tpoff
                     cfr = cf(pos, pos + camoff.LookVector * v3_101)
+                    xzvel = v3_0
+                    Yvel = 0
                 end
             else
                 fling()
@@ -580,6 +600,8 @@ if ctrlclicktp then
                 if mouse.Target then
                     local pos = mouse.Hit.Position + tpoff
                     cfr = cf(pos, pos + camoff.LookVector * v3_101)
+                    xzvel = v3_0
+                    Yvel = 0
                 end
             else
                 predictionfling()
@@ -591,6 +613,8 @@ if ctrlclicktp then
                 if mouse.Target then
                     local pos = mouse.Hit.Position + tpoff
                     cfr = cf(pos, pos + camoff.LookVector * v3_101)
+                    xzvel = v3_0
+                    Yvel = 0
                 end
             elseif not predictionfling() then
                 fling()
@@ -601,6 +625,8 @@ if ctrlclicktp then
             if mouse.Target and uis:IsKeyDown(ctrlclicktp) then
                 local pos = mouse.Hit.Position + tpoff
                 cfr = cf(pos, pos + camoff.LookVector * v3_101)
+                xzvel = v3_0
+                Yvel = 0
             end
         end)
     end
@@ -774,12 +800,12 @@ end
 con = heartbeat:Connect(mainFunction)
 mainFunction()
 
-local RootJoint = getjoint("RootJoint")
-local RightShoulder = getjoint("Right Shoulder")
-local LeftShoulder = getjoint("Left Shoulder")
-local RightHip = getjoint("Right Hip")
-local LeftHip = getjoint("Left Hip")
-local Neck = getjoint("Neck")
+local RootJoint = getJoint("RootJoint")
+local RightShoulder = getJoint("Right Shoulder")
+local LeftShoulder = getJoint("Left Shoulder")
+local RightHip = getJoint("Right Hip")
+local LeftHip = getJoint("Left Hip")
+local Neck = getJoint("Neck")
 
 local legcfR, legcfL, raydir = cf(1, -1, 0), cf(-1, -1, 0), v3_010 * -2
 local function raycastlegs() --this returns 2 values: right leg raycast offset, left leg raycast offset
@@ -792,7 +818,23 @@ local function velbycfrvec() --this returns 2 values: forward/backwards movement
     return fw.X + fw.Z, rt.X + rt.Z
 end
 
+local lastvel = v3_0
+local velchg1 = v3_0
+local function velchgbycfrvec() --this returns 2 values: forward/backwards velocity change, right/left velocity change
+    velchg1 = velchg1 + (lastvel - xzvel) --i recommend setting velchg1 to v3_0 when u start using this function or it will look worse
+    lastvel = xzvel
+    velchg1 = velchg1:Lerp(v3_0, deltaTime / 2)
+    local fw, rt = cfr.LookVector * velchg1 / 32, cfr.RightVector * velchg1 / 32
+    return fw.X + fw.Z, rt.X + rt.Z
+end
+
 addmode("default", {
+    modeEntered = function()
+        
+    end,
+    modeLeft = function()
+        
+    end,
     idle = function()
         
     end,
