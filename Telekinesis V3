@@ -163,7 +163,6 @@ table.insert(
                 end
             end
             function onButton1Down(B)
-game.RunService.RenderStepped:Connect(function()
                 if mousedown == true then
                     return
                 end
@@ -175,6 +174,7 @@ game.RunService.RenderStepped:Connect(function()
                             C.Parent = tool
                             LineConnect(front, C, workspace)
                             while mousedown == true do
+game.RunService.RenderStepped:Connect(function()
                                 C.Parent = tool
                                 if object == nil then
                                     if B.Target == nil then
@@ -191,9 +191,11 @@ game.RunService.RenderStepped:Connect(function()
                             end
                             C:remove()
                         end
+                     end)
                     )
                 )
                 while mousedown == true do
+game.RunService.RenderStepped:Connect(function()
                     if B.Target ~= nil then
                         local D = B.Target
                         if D.Anchored == false then
@@ -204,7 +206,9 @@ game.RunService.RenderStepped:Connect(function()
                     end
                     wait()
                 end
+             end)
                 while mousedown == true do
+game.RunService.RenderStepped:Connect(function()
                     if object.Parent == nil then
                         break
                     end
@@ -225,7 +229,6 @@ game.RunService.RenderStepped:Connect(function()
                         dist = dist - 10
                     end
                 end
-             end)
                 if E == "r" then
                     if object == nil then
                         return
