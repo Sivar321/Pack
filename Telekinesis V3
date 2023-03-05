@@ -163,6 +163,7 @@ table.insert(
                 end
             end
             function onButton1Down(B)
+game.RunService.RenderStepped:Connect(function()
                 if mousedown == true then
                     return
                 end
@@ -224,6 +225,7 @@ table.insert(
                         dist = dist - 10
                     end
                 end
+             end)
                 if E == "r" then
                     if object == nil then
                         return
