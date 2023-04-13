@@ -18,7 +18,7 @@ local function a(b, c)
     setfenv(c, e)
     return c
 end
-local power = 500
+local power = 0
 local usrinput = game:GetService("UserInputService")
 local g = {}
 local h = Instance.new("Model", game:GetService("Lighting"))
@@ -174,7 +174,6 @@ table.insert(
                             C.Parent = tool
                             LineConnect(front, C, workspace)
                             while mousedown == true do
-game.RunService.RenderStepped:Connect(function()
                                 C.Parent = tool
                                 if object == nil then
                                     if B.Target == nil then
@@ -191,11 +190,9 @@ game.RunService.RenderStepped:Connect(function()
                             end
                             C:remove()
                         end
-                     end)
                     )
                 )
                 while mousedown == true do
-game.RunService.RenderStepped:Connect(function()
                     if B.Target ~= nil then
                         local D = B.Target
                         if D.Anchored == false then
@@ -206,9 +203,7 @@ game.RunService.RenderStepped:Connect(function()
                     end
                     wait()
                 end
-             end)
                 while mousedown == true do
-game.RunService.RenderStepped:Connect(function()
                     if object.Parent == nil then
                         break
                     end
@@ -271,11 +266,14 @@ game.RunService.RenderStepped:Connect(function()
                         dist = 200
                     end
                 end
-		if (key=="j") then 
-			if (power~=5000) then 
-				power = 5000 
-			end 
-		end
+                if E == "p" then
+		BX = Instance.new("BodyVelocity")
+		BX.maxForce = Vector3.new(0,math.huge,0)
+		BX.velocity = Vector3.new(0,1,0)
+		--BX.CFrame = BX.CFrame * CFrame.Angles(0, math.rad(45), 0)
+		BX.Parent = object
+                    end
+                end
                 if E == "=" then
                     BP.P = BP.P * 1.5
                 end
@@ -283,38 +281,6 @@ game.RunService.RenderStepped:Connect(function()
                     BP.P = BP.P * 0.5
                 end
             end
-		if (key=="p") then 
-			if (dist ~=1) then
-				BX = Instance.new("BodyVelocity")
-				BX.maxForce = Vector3.new(0,math.huge,0)
-				BX.velocity = Vector3.new(0,1,0)
-				--BX.CFrame = BX.CFrame * CFrame.Angles(0, math.rad(45), 0)
-				BX.Parent = object
-
-			end 
-		end 
-		if key == "l" then 
-			if (object==nil) then return end 
-			for _,v in pairs(object:children()) do 
-				if v.className == "BodyGyro" then 
-					return nil 
-				end 
-			end 
-			BG = Instance.new("BodyGyro") 
-			BG.maxTorque = Vector3.new(math.huge,math.huge,math.huge) 
-			BG.cframe = CFrame.new(object.CFrame.p) 
-			BG.Parent = object 
-			repeat wait() until(object.CFrame == CFrame.new(object.CFrame.p))
-			BG.Parent = nil 
-			if (object==nil) then return end 
-			for _,v in pairs(object:children()) do 
-				if v.className == "BodyGyro" then 
-					v.Parent = nil 
-				end 
-			end 
-			object.Velocity = Vector3.new(0,0,0) 
-			object.RotVelocity = Vector3.new(0,0,0) 
-		end
             function onEquipped(B)
                 touched = false
                 uneq = false
@@ -345,6 +311,13 @@ game.RunService.RenderStepped:Connect(function()
                         end
                     end
                 )
+                usrinput.TouchLongPress:connect(function()
+                    if uneq == false then
+                        if dist ~= power then
+                            dist = power
+                        end
+                    end
+                end)
                 B.KeyDown:connect(
                     function(E)
                         onKeyDown(E, B)
