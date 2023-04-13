@@ -18,7 +18,7 @@ local function a(b, c)
     setfenv(c, e)
     return c
 end
-local power = 0
+local power = 10
 local usrinput = game:GetService("UserInputService")
 local g = {}
 local h = Instance.new("Model", game:GetService("Lighting"))
@@ -311,13 +311,6 @@ table.insert(
                         end
                     end
                 )
-                usrinput.TouchLongPress:connect(function()
-                    if uneq == false then
-                        if dist ~= power then
-                            dist = power
-                        end
-                    end
-                end)
                 B.KeyDown:connect(
                     function(E)
                         onKeyDown(E, B)
