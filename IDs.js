@@ -1,5 +1,5 @@
 //Hats-Id
-function hats() {
+function hats2() {
     return [
         {
             id: 45,
